@@ -1,0 +1,23 @@
+{
+  "name": "@beaker/dat-node",
+  "version": "1.0.0",
+  "description": "A toolkit for writing Dat-based services in nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava -s test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beakerbrowser/node-dat-library.git"
+  },
+  "keywords": [
+    "dat",
+    "node"
+  ],
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/beakerbrowser/node-dat-library/issues"
+  },
+  "homepage": "https://github.com/beakerbrowser/node-dat-library#readme"
+}
