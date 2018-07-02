@@ -17,21 +17,41 @@ Dat.setup({
   data: './dat' // where to store the dat data
 })
 
-// create and use an archive instance
+// you can now use `DatArchive` as in Beaker
+
 var archive = new DatArchive('dat://beakerbrowser.com')
 await archive.readdir('/') => [...]
+await archive.writeFile('/foo.txt', 'bar')
+var events = archive.watch('/subdir/*.json')
+events.on('changed', ({path}) => /* ... */)
+
+// you can also use `Dat` to do internal management
+
+Dat.list()
+Dat.load('dat://beakerbrowser.com', {swarm: true})
+Dat.reconfigure('dat://beakerbrowser.com', {swarm: true})
+Dat.get('dat://beakerbrowser.com')
+Dat.isLoaded('dat://beakerbrowser.com')
+Dat.unload('dat://beakerbrowser.com')
+Dat.createDebugLogStream()
+
+await Dat.cache.list()
+await Dat.cache.has('dat://beakerbrowser.com')
+await Dat.cache.getMtime('dat://beakerbrowser.com')
+await Dat.cache.getDiskUsage('dat://beakerbrowser.com')
+await Dat.cache.getDownloadProgress('dat://beakerbrowser.com')
+await Dat.cache.isFullyDownloaded('dat://beakerbrowser.com')
+await Dat.cache.delete('dat://beakerbrowser.com')
+
+await Dat.dns.resolve('dat://beakerbrowser.com')
+
+Dat.on('network-changed', (url, {connections}) => /*...*/)
+Dat.on('download', (url, {feed, block, bytes}) => /*...*/)
+Dat.on('upload', (url, {feed, block, bytes}) => /*...*/)
+Dat.on('sync', (url, {feed}) => /*...*/)
 ```
 
-Currently includes:
-
- - Dat-management APIs
- - Swarm APIs
- - [DatArchive API](https://beakerbrowser.com/docs/apis/dat.html)
-
-Planned additions:
-
- - DatFeed API (once implemented in Beaker)
- - DatDB API (once implemented in Beaker)
+## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -52,7 +72,7 @@ Planned additions:
   - [Cache](#cache)
     - [Dat.cache.list()](#datcachelist)
     - [Dat.cache.has(url)](#datcachehasurl)
-    - [Dat.cache.getMTime(url)](#datcachegetmtimeurl)
+    - [Dat.cache.getMtime(url)](#datcachegetmtimeurl)
     - [Dat.cache.getDiskUsage(url)](#datcachegetdiskusageurl)
     - [Dat.cache.getDownloadProgress(url)](#datcachegetdownloadprogressurl)
     - [Dat.cache.isFullyDownloaded(url)](#datcacheisfullydownloadedurl)
@@ -206,12 +226,12 @@ Async. Is the given dat in the cache?
 var isInCache = await Dat.cache.has('dat://beakerbrowser.com')
 ```
 
-#### Dat.cache.getMTime(url)
+#### Dat.cache.getMtime(url)
 
 Async. Get the modification time of the dat's data. (Tells you the last time new data was cached.)
 
 ```js
-var mtime = await Dat.cache.getMTime('dat://beakerbrowser.com')
+var mtime = await Dat.cache.getMtime('dat://beakerbrowser.com')
 ```
 
 #### Dat.cache.getDiskUsage(url)
