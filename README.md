@@ -1,4 +1,4 @@
-# Dat for Nodejs ("Beaker" edition)
+# @beaker/dat-node
 
 A toolkit for writing Dat-based services in nodejs.
 
