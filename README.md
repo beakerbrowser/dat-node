@@ -20,10 +20,7 @@ Dat.setup({
 // you can now use `DatArchive` as in Beaker
 
 var archive = new DatArchive('dat://beakerbrowser.com')
-await archive.readdir('/') => [...]
-await archive.writeFile('/foo.txt', 'bar')
-var events = archive.watch('/subdir/*.json')
-events.on('changed', ({path}) => /* ... */)
+// see https://beakerbrowser.com/docs/apis/dat.html
 
 // you can also use `Dat` to do internal management
 
