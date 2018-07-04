@@ -85,11 +85,11 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
 
 Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
 
- - `opts`
-   - `data`: String, the path at which all data is stored.
-   - `autoSwarm:` Boolean, swarm dats by default when loaded? Defaults to true.
-   - `autoListen`: Boolean, bind a port automatically after load. Defaults to true.
-   - `port`: Number, the port to bind to. Defaults to 3282.
+ - **opts**
+   - **data**: String, the path at which all data is stored.
+   - **autoSwarm**` Boolean, swarm dats by default when loaded? Defaults to true.
+   - **autoListen**: Boolean, bind a port automatically after load. Defaults to true.
+   - **port**: Number, the port to bind to. Defaults to 3282.
 
 ```js
 const {createDaemon} = require('@beaker/dat-daemon')
@@ -115,9 +115,9 @@ A 32-byte buffer containing a randomly-generated ID, used to deduplicate connect
 
 #### daemon.listen([port])
 
-Start listening for connections in the dat network.
+Start listening for connections in the dat network. Only need to call if [`createDaemon`](#createdaemon) is called with `{autoListen: false}`, or if `daemon.close()` has been called.
 
- - `port`. Number. The port to listen for connections on. Defaults to 3282.
+ - **port**. Number. The port to listen for connections on. Defaults to 3282.
 
 #### daemon.close()
 
@@ -127,7 +127,7 @@ Unswarm all dats and stop listening.
 
 Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
 
- - `url`: String, the url of the dat. Can provide a DNS shortname.
+ - **url**: String, the url of the dat. Can provide a DNS shortname.
 
 ```js
 await daemon.joinSwarm('dat://beakerbrowser.com')
@@ -147,7 +147,7 @@ Will not remove the dat's data from the local storage (see `daemon.storage.remov
 
 Is the given dat in-memory and being actively swarmed?
 
- - `url`: String, the url of the dat. Can provide a DNS shortname.
+ - **url**: String, the url of the dat. Can provide a DNS shortname.
 
 ```js
 if (daemon.isSwarming('dat://beakerbrowser.com')) {
@@ -175,9 +175,9 @@ var archive = daemon.getArchive('dat://beakerbrowser.com')
 
 Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with the given opts. Will automatically persist and swarm the archive.
 
- - `opts`
-   - `title` String. The title of the new archive.
-   - `description` String. The description of the new archive.
+ - **opts**
+   - **title** String. The title of the new archive.
+   - **description** String. The description of the new archive.
 
 ```js
 var archive = await daemon.createArchive({title: 'My new archive'})
@@ -185,9 +185,9 @@ var archive = await daemon.createArchive({title: 'My new archive'})
 
 #### daemon.forkArchive(url[, opts])
 
- - `opts`
-   - `title` String. The title of the new archive.
-   - `description` String. The description of the new archive.
+ - **opts**
+   - **title** String. The title of the new archive.
+   - **description** String. The description of the new archive.
    
 Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) which duplicates the content of the given archive. Can optionally modify the manifest with `opts`.  Will automatically persist and swarm the archive.
 
@@ -237,8 +237,8 @@ TODO decide what features this should include
 
 A change in the network-connectivity of a given dat.
 
- - `url`. String. The dat url.
- - `connections`. Number. The number of connected peers.
+ - **url**. String. The dat url.
+ - **connections**. Number. The number of connected peers.
 
 ```js
 daemon.on('network-changed', (url, {connections}) => {
@@ -250,10 +250,10 @@ daemon.on('network-changed', (url, {connections}) => {
 
 Some data has been downloaded.
 
- - `url`. String. The dat url.
- - `feed`. String. Which feed received data (e.g. 'metadata', 'content')
- - `block`. Number. The block index downloaded.
- - `bytes`. Number. How many bytes were downloaded.
+ - **url**. String. The dat url.
+ - **feed**. String. Which feed received data (e.g. 'metadata', 'content')
+ - **block**. Number. The block index downloaded.
+ - **bytes**. Number. How many bytes were downloaded.
 
 ```js
 daemon.on('download', (url, {feed, block, bytes}) => {
@@ -265,10 +265,10 @@ daemon.on('download', (url, {feed, block, bytes}) => {
 
 Some data has been uploaded.
 
- - `url`. String. The dat url.
- - `feed`. String. Which feed sent data (e.g. 'metadata', 'content')
- - `block`. Number. The block index uploaded.
- - `bytes`. Number. How many bytes were uploaded.
+ - **url**. String. The dat url.
+ - **feed**. String. Which feed sent data (e.g. 'metadata', 'content')
+ - **block**. Number. The block index uploaded.
+ - **bytes**. Number. How many bytes were uploaded.
 
 ```js
 daemon.on('upload', (url, {feed, block, bytes}) => {
@@ -280,8 +280,8 @@ daemon.on('upload', (url, {feed, block, bytes}) => {
 
 A feed has been fully downloaded.
 
- - `url`. String. The dat url.
- - `feed`. String. Which feed finished downloading (e.g. 'metadata', 'content')
+ - **url**. String. The dat url.
+ - **feed**. String. Which feed finished downloading (e.g. 'metadata', 'content')
 
 ```js
 daemon.on('sync', (url, {feed}) => {
@@ -353,20 +353,20 @@ var pct = await daemon.storage.isFullySynced('dat://beakerbrowser.com')
 
 Async. Get the disk-cached DNS lookup result for the given hostname.
 
- - `hostname` String.
+ - **hostname** String.
 
 #### storage.setDNSCache(hostname, value)
 
 Async. Set the disk-cached DNS lookup result for the given hostname.
 
- - `hostname` String.
- - `value` String.
+ - **hostname** String.
+ - **value** String.
 
 #### storage.clearDNSCache(hostname)
 
 Async. Remove the disk-cached DNS lookup result for the given hostname.
 
- - `hostname` String.
+ - **hostname** String.
 
 ### DatDNS
 
