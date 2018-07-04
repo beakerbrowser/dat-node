@@ -10,25 +10,25 @@ const daemon = createDaemon({
   storage: './dat'
 })
 
-// these methods return a DatArchive
+// get, create, or fork files archives
 var archive = await daemon.getArchive('dat://beakerbrowser.com')
 var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
 
-// `archive` has a fs-like interface
+// interact with the files within the archive
 var filenames = await archive.readdir('/')
 var filedata = await archive.readFile('/index.html', 'utf8')
 await archive.mkdir('/new')
 await archive.writeFile('/new/thing.json', JSON.stringify({hi: 'world'}))
 archive.watch('/new/*.json').addEventListener('changed', ...) // file changed
 
-// network events
+// listen to global network events
 daemon.on('network-changed', ...) // change to network conditions (aka new peer)
 daemon.on('download', ...) // data was downloaded
 daemon.on('upload', ...) // data was uploaded
 daemon.on('sync', ...) // a feed was synced
 
-// helpers
+// get internal information about a dat
 await daemon.getMtime('dat://beakerbrowser.com') // unix timestamp of last change to the dat
 await daemon.getDiskUsage('dat://beakerbrowser.com') // in bytes
 await daemon.getSyncProgress('dat://beakerbrowser.com') // 0-1, where 1 is 100% synced
