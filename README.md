@@ -3,39 +3,27 @@
 A toolkit for writing Dat-based services in nodejs.
 
 ```js
-const dat = require('@beaker/dat-daemon')
+const {createDaemon} = require('@beaker/dat-daemon')
 
-const daemon = dat.createDaemon({
+const daemon = createDaemon({
   storage: './dat'
 })
-daemon.listen()
-daemon.close()
-daemon.createDebugLogStream()
 
+// these methods return a DatArchive (https://beakerbrowser.com/docs/apis/dat.html)
 var archive = await daemon.getArchive('dat://beakerbrowser.com')
 var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
-// archive api: https://beakerbrowser.com/docs/apis/dat.html
 
-daemon.joinSwarm('dat://beakerbrowser.com')
-daemon.leaveSwarm('dat://beakerbrowser.com')
-daemon.isSwarming('dat://beakerbrowser.com')
-daemon.listSwarming()
+// network events
+daemon.on('network-changed', (dat, {connections}) => /*...*/)
+daemon.on('download', (dat, {feed, block, bytes}) => /*...*/)
+daemon.on('upload', (dat, {feed, block, bytes}) => /*...*/)
+daemon.on('sync', (dat, {feed}) => /*...*/)
 
-daemon.on('network-changed', (item, {connections}) => /*...*/)
-daemon.on('download', (item, {feed, block, bytes}) => /*...*/)
-daemon.on('upload', (item, {feed, block, bytes}) => /*...*/)
-daemon.on('sync', (item, {feed}) => /*...*/)
-
-var datInfos         = await daemon.storage.list()
-var datInfo          = await daemon.storage.get('dat://beakerbrowser.com')
-/* void */             await daemon.storage.delete('dat://beakerbrowser.com')
-var mtime            = await daemon.storage.getMtime('dat://beakerbrowser.com')
-var diskUsage        = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
-var downloadProgress = await daemon.storage.getDownloadProgress('dat://beakerbrowser.com')
-var isDownloaded     = await daemon.storage.isFullyDownloaded('dat://beakerbrowser.com')
-
-await daemon.dns.resolve('dat://beakerbrowser.com')
+// helpers
+var mtime = await daemon.getMtime('dat://beakerbrowser.com')
+var diskUsage = await daemon.getDiskUsage('dat://beakerbrowser.com')
+var downloadProgress = await daemon.getSyncProgress('dat://beakerbrowser.com')
 ```
 
 Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
@@ -71,8 +59,8 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
     - [storage.get(url)](#storagegeturl)
     - [storage.getMtime(url)](#storagegetmtimeurl)
     - [storage.getDiskUsage(url)](#storagegetdiskusageurl)
-    - [storage.getDownloadProgress(url)](#storagegetdownloadprogressurl)
-    - [storage.isFullyDownloaded(url)](#storageisfullydownloadedurl)
+    - [storage.getSyncProgress(url)](#storagegetdownloadprogressurl)
+    - [storage.isFullySynced(url)](#storageisfullydownloadedurl)
     - [storage.delete(url)](#storagedeleteurl)
     - [storage.getDNSCache(hostname)](#storagegetdnscachehostname)
     - [storage.setDNSCache(hostname, value)](#storagesetdnscachehostname-value)
@@ -195,6 +183,38 @@ Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html)
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My fork of the Beaker site'})
 ```
 
+#### daemon.getMtime(url)
+
+Async. Get the modification time of the dat's data. (Tells you the last time new data was written.)
+
+```js
+var mtime = await daemon.getMtime('dat://beakerbrowser.com')
+```
+
+#### daemon.getDiskUsage(url)
+
+Async. Get the amount of bytes being used by the dat in the local cache.
+
+```js
+var bytes = await daemon.getDiskUsage('dat://beakerbrowser.com')
+```
+
+#### daemon.getSyncProgress(url)
+
+Async. Get the percentage of the total data downloaded (between 0 and 1).
+
+```js
+var pct = await daemon.getSyncProgress('dat://beakerbrowser.com')
+```
+
+#### daemon.isFullySynced(url)
+
+Async. Is all of the dat's data cached?
+
+```js
+var pct = await daemon.isFullySynced('dat://beakerbrowser.com')
+```
+
 #### daemon.createDebugLogStream([opts])
 
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
@@ -277,6 +297,14 @@ Async. Fetch the stored metadata about the archive. Returns `null` if not presen
 var datInfo = await daemon.storage.get('dat://beakerbrowser.com')
 ```
 
+#### storage.delete(url)
+
+Async. Delete all cached data for the dat.
+
+```js
+await daemon.storage.delete('dat://beakerbrowser.com')
+```
+
 #### storage.getMtime(url)
 
 Async. Get the modification time of the dat's data. (Tells you the last time new data was written.)
@@ -293,28 +321,20 @@ Async. Get the amount of bytes being used by the dat in the local cache.
 var bytes = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
 ```
 
-#### storage.getDownloadProgress(url)
+#### storage.getSyncProgress(url)
 
 Async. Get the percentage of the total data downloaded (between 0 and 1).
 
 ```js
-var pct = await daemon.storage.getDownloadProgress('dat://beakerbrowser.com')
+var pct = await daemon.storage.getSyncProgress('dat://beakerbrowser.com')
 ```
 
-#### storage.isFullyDownloaded(url)
+#### storage.isFullySynced(url)
 
 Async. Is all of the dat's data cached?
 
 ```js
-var pct = await daemon.storage.isFullyDownloaded('dat://beakerbrowser.com')
-```
-
-#### storage.delete(url)
-
-Async. Delete all cached data for the dat.
-
-```js
-await daemon.storage.delete('dat://beakerbrowser.com')
+var pct = await daemon.storage.isFullySynced('dat://beakerbrowser.com')
 ```
 
 #### storage.getDNSCache(hostname)
