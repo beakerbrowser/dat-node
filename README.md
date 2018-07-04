@@ -1,45 +1,47 @@
-# @beaker/dat-server
+# @beaker/dat-daemon
 
 A toolkit for writing Dat-based services in nodejs.
 
 ```
-npm install @beaker/dat-server
+npm install @beaker/dat-daemon
 ```
 
 Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
 
 ```js
-const dat = require('@beaker/dat-server')
+const dat = require('@beaker/dat-daemon')
 
-const server = dat.createServer({
+const daemon = dat.createDaemon({
   storage: './dat'
 })
-server.close()
-server.createDebugLogStream()
+daemon.listen()
+daemon.close()
+daemon.createDebugLogStream()
 
-server.getArchive('dat://beakerbrowser.com')
-server.createArchive({title: 'My Archive'})
-server.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
+var archive = await daemon.getArchive('dat://beakerbrowser.com')
+var archive = await daemon.createArchive({title: 'My Archive'})
+var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
+// archive api: https://beakerbrowser.com/docs/apis/dat.html
 
-server.joinSwarm('dat://beakerbrowser.com')
-server.leaveSwarm('dat://beakerbrowser.com')
-server.isSwarming('dat://beakerbrowser.com')
-server.listSwarming()
+daemon.joinSwarm('dat://beakerbrowser.com')
+daemon.leaveSwarm('dat://beakerbrowser.com')
+daemon.isSwarming('dat://beakerbrowser.com')
+daemon.listSwarming()
 
-server.on('network-changed', (item, {connections}) => /*...*/)
-server.on('download', (item, {feed, block, bytes}) => /*...*/)
-server.on('upload', (item, {feed, block, bytes}) => /*...*/)
-server.on('sync', (item, {feed}) => /*...*/)
+daemon.on('network-changed', (item, {connections}) => /*...*/)
+daemon.on('download', (item, {feed, block, bytes}) => /*...*/)
+daemon.on('upload', (item, {feed, block, bytes}) => /*...*/)
+daemon.on('sync', (item, {feed}) => /*...*/)
 
-await server.storage.list()
-await server.storage.has('dat://beakerbrowser.com')
-await server.storage.delete('dat://beakerbrowser.com')
-await server.storage.getMtime('dat://beakerbrowser.com')
-await server.storage.getDiskUsage('dat://beakerbrowser.com')
-await server.storage.getDownloadProgress('dat://beakerbrowser.com')
-await server.storage.isFullyDownloaded('dat://beakerbrowser.com')
+var datInfos         = await daemon.storage.list()
+var datInfo          = await daemon.storage.get('dat://beakerbrowser.com')
+/* void */             await daemon.storage.delete('dat://beakerbrowser.com')
+var mtime            = await daemon.storage.getMtime('dat://beakerbrowser.com')
+var diskUsage        = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
+var downloadProgress = await daemon.storage.getDownloadProgress('dat://beakerbrowser.com')
+var isDownloaded     = await daemon.storage.isFullyDownloaded('dat://beakerbrowser.com')
 
-await server.dns.resolve('dat://beakerbrowser.com')
+await daemon.dns.resolve('dat://beakerbrowser.com')
 ```
 
 ## Table of Contents
@@ -49,31 +51,36 @@ await server.dns.resolve('dat://beakerbrowser.com')
 
 
 - [API](#api)
-  - [createServer(opts)](#createserveropts)
-  - [DatServer](#datserver)
-    - [server.storage](#serverstorage)
-    - [server.dns](#serverdns)
-    - [server.joinSwarm(url)](#serverjoinswarmurl)
-    - [server.leaveSwarm(url)](#serverleaveswarmurl)
-    - [server.isSwarming(url)](#serverisswarmingurl)
-    - [server.listSwarming()](#serverlistswarming)
-    - [server.getArchive(url)](#servergetarchiveurl)
-    - [server.createArchive([opts])](#servercreatearchiveopts)
-    - [server.forkArchive(url[, opts])](#serverforkarchiveurl-opts)
-    - [server.close()](#serverclose)
-    - [server.createDebugLogStream([opts])](#servercreatedebuglogstreamopts)
+  - [createDaemon(opts)](#createdaemonopts)
+  - [DatDaemon](#datdaemon)
+    - [daemon.storage](#daemonstorage)
+    - [daemon.dns](#daemondns)
+    - [daemon.networkId](#daemonnetworkid)
+    - [daemon.listen([port])](#daemonlistenport)
+    - [daemon.close()](#daemonclose)
+    - [daemon.joinSwarm(url)](#daemonjoinswarmurl)
+    - [daemon.leaveSwarm(url)](#daemonleaveswarmurl)
+    - [daemon.isSwarming(url)](#daemonisswarmingurl)
+    - [daemon.listSwarming()](#daemonlistswarming)
+    - [daemon.getArchive(url)](#daemongetarchiveurl)
+    - [daemon.createArchive([opts])](#daemoncreatearchiveopts)
+    - [daemon.forkArchive(url[, opts])](#daemonforkarchiveurl-opts)
+    - [daemon.createDebugLogStream([opts])](#daemoncreatedebuglogstreamopts)
     - [Event: "network-changed"](#event-network-changed)
     - [Event: "download"](#event-download)
     - [Event: "upload" (url, {feed, block, bytes})](#event-upload-url-feed-block-bytes)
     - [Event: "sync" (url, {feed})](#event-sync-url-feed)
-  - [DatServerStorage](#datserverstorage)
+  - [DatDaemonStorage](#datdaemonstorage)
     - [storage.list()](#storagelist)
-    - [storage.has(url)](#storagehasurl)
+    - [storage.get(url)](#storagegeturl)
     - [storage.getMtime(url)](#storagegetmtimeurl)
     - [storage.getDiskUsage(url)](#storagegetdiskusageurl)
     - [storage.getDownloadProgress(url)](#storagegetdownloadprogressurl)
     - [storage.isFullyDownloaded(url)](#storageisfullydownloadedurl)
     - [storage.delete(url)](#storagedeleteurl)
+    - [storage.getDNSCache(hostname)](#storagegetdnscachehostname)
+    - [storage.setDNSCache(hostname, value)](#storagesetdnscachehostname-value)
+    - [storage.clearDNSCache(hostname)](#storagecleardnscachehostname)
   - [DatDNS](#datdns)
     - [dns.resolve(url)](#dnsresolveurl)
   - [DatArchive](#datarchive)
@@ -82,79 +89,93 @@ await server.dns.resolve('dat://beakerbrowser.com')
 
 ## API
 
-### createServer(opts)
+### createDaemon(opts)
 
-Create a new dat server. See the [`DatServer`](#datserver) API.
+Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
 
  - `opts`
    - `data`: String, the path at which all data is stored.
    - `autoSwarm:` Boolean, swarm dats by default when loaded? Defaults to true.
 
 ```js
-var server = dat.createServer({
+var daemon = dat.createDaemon({
   data: './dat'
 })
 ```
 
-### DatServer
+### DatDaemon
 
-#### server.storage
+#### daemon.storage
 
-A [`DatServerStorage`](#datserverstorage) instance.
+A [`DatDaemonStorage`](#datDaemonstorage) instance.
 
-#### server.dns
+#### daemon.dns
 
 A [`DatDNS`](#datdns) instance.
 
-#### server.joinSwarm(url)
+#### daemon.networkId
+
+A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
+
+#### daemon.listen([port])
+
+Start listening for connections in the dat network.
+
+ - `port`. Number. The port to listen for connections on. Defaults to 3282.
+
+#### daemon.close()
+
+Unswarm all dats and stop listening.
+
+#### daemon.joinSwarm(url)
 
 Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
 
  - `url`: String, the url of the dat. Can provide a DNS shortname.
 
 ```js
-await server.joinSwarm('dat://beakerbrowser.com')
+await daemon.joinSwarm('dat://beakerbrowser.com')
 ```
 
-#### server.leaveSwarm(url)
+#### daemon.leaveSwarm(url)
 
 Stop swarming the given dat.
 
 ```js
-server.leaveSwarm('dat://beakerbrowser.com')
+daemon.leaveSwarm('dat://beakerbrowser.com')
 ```
 
-Will not remove the dat's data from the local storage (see `server.storage.remove()`).
+Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
 
-#### server.isSwarming(url)
+#### daemon.isSwarming(url)
 
 Is the given dat in-memory and being actively swarmed?
 
  - `url`: String, the url of the dat. Can provide a DNS shortname.
 
 ```js
-if (server.isSwarming('dat://beakerbrowser.com')) {
+if (daemon.isSwarming('dat://beakerbrowser.com')) {
   console.log('is being swarmed')
 }
 ```
 
-#### server.listSwarming()
+#### daemon.listSwarming()
 
 List the keys of in-memory and swarmed dats.
 
 ```js
-var activeDats = server.listSwarming()
+var activeDats = daemon.listSwarming()
 ```
 
-#### server.getArchive(url)
+#### daemon.getArchive(url)
 
 Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with the given opts.
 
 ```js
-var archive = server.getArchive('dat://beakerbrowser.com')
+var archive = daemon.getArchive('dat://beakerbrowser.com')
 ```
 
-#### server.createArchive([opts])
+#### daemon.createArchive([opts])
 
 Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with the given opts. Will automatically persist and swarm the archive.
 
@@ -163,10 +184,10 @@ Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html)
    - `description` String. The description of the new archive.
 
 ```js
-var archive = await server.createArchive({title: 'My new archive'})
+var archive = await daemon.createArchive({title: 'My new archive'})
 ```
 
-#### server.forkArchive(url[, opts])
+#### daemon.forkArchive(url[, opts])
 
  - `opts`
    - `title` String. The title of the new archive.
@@ -175,14 +196,10 @@ var archive = await server.createArchive({title: 'My new archive'})
 Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) which duplicates the content of the given archive. Can optionally modify the manifest with `opts`.  Will automatically persist and swarm the archive.
 
 ```js
-var archive = await server.forkArchive('dat://beakerbrowser.com', {title: 'My fork of the Beaker site'})
+var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My fork of the Beaker site'})
 ```
 
-#### server.close()
-
-Unswarm all dats.
-
-#### server.createDebugLogStream([opts])
+#### daemon.createDebugLogStream([opts])
 
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
 
@@ -196,7 +213,7 @@ A change in the network-connectivity of a given dat.
  - `connections`. Number. The number of connected peers.
 
 ```js
-server.on('network-changed', (url, {connections}) => {
+daemon.on('network-changed', (url, {connections}) => {
   // ...
 })
 ```
@@ -211,7 +228,7 @@ Some data has been downloaded.
  - `bytes`. Number. How many bytes were downloaded.
 
 ```js
-server.on('download', (url, {feed, block, bytes}) => {
+daemon.on('download', (url, {feed, block, bytes}) => {
   // ...
 })
 ```
@@ -226,7 +243,7 @@ Some data has been uploaded.
  - `bytes`. Number. How many bytes were uploaded.
 
 ```js
-server.on('upload', (url, {feed, block, bytes}) => {
+daemon.on('upload', (url, {feed, block, bytes}) => {
   // ...
 })
 ```
@@ -239,37 +256,37 @@ A feed has been fully downloaded.
  - `feed`. String. Which feed finished downloading (e.g. 'metadata', 'content')
 
 ```js
-server.on('sync', (url, {feed}) => {
+daemon.on('sync', (url, {feed}) => {
   // ...
 })
 ```
 
-### DatServerStorage
+### DatDaemonStorage
 
-The local data store. Includes all data which is persisted onto disk. Can be found on the [`DatServer`](#datserver) API as `server.storage`.
+The local data store. Includes all data which is persisted onto disk. Can be found on the [`DatDaemon`](#DatDaemon) API as `daemon.storage`.
 
 #### storage.list()
 
-Async. List the keys of locally-cached dats.
+Async. List the metadata of locally-stored dats.
 
 ```js
-var cachedDatKeys = await server.storage.list()
+var datInfos = await daemon.storage.list()
 ```
 
-#### storage.has(url)
+#### storage.get(url)
 
-Async. Is the given dat in the cache?
+Async. Fetch the stored metadata about the archive. Returns `null` if not present locally.
 
 ```js
-var isInCache = await server.storage.has('dat://beakerbrowser.com')
+var datInfo = await daemon.storage.get('dat://beakerbrowser.com')
 ```
 
 #### storage.getMtime(url)
 
-Async. Get the modification time of the dat's data. (Tells you the last time new data was cached.)
+Async. Get the modification time of the dat's data. (Tells you the last time new data was written.)
 
 ```js
-var mtime = await server.storage.getMtime('dat://beakerbrowser.com')
+var mtime = await daemon.storage.getMtime('dat://beakerbrowser.com')
 ```
 
 #### storage.getDiskUsage(url)
@@ -277,7 +294,7 @@ var mtime = await server.storage.getMtime('dat://beakerbrowser.com')
 Async. Get the amount of bytes being used by the dat in the local cache.
 
 ```js
-var bytes = await server.storage.getDiskUsage('dat://beakerbrowser.com')
+var bytes = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
 ```
 
 #### storage.getDownloadProgress(url)
@@ -285,7 +302,7 @@ var bytes = await server.storage.getDiskUsage('dat://beakerbrowser.com')
 Async. Get the percentage of the total data downloaded (between 0 and 1).
 
 ```js
-var pct = await server.storage.getDownloadProgress('dat://beakerbrowser.com')
+var pct = await daemon.storage.getDownloadProgress('dat://beakerbrowser.com')
 ```
 
 #### storage.isFullyDownloaded(url)
@@ -293,7 +310,7 @@ var pct = await server.storage.getDownloadProgress('dat://beakerbrowser.com')
 Async. Is all of the dat's data cached?
 
 ```js
-var pct = await server.storage.isFullyDownloaded('dat://beakerbrowser.com')
+var pct = await daemon.storage.isFullyDownloaded('dat://beakerbrowser.com')
 ```
 
 #### storage.delete(url)
@@ -301,19 +318,38 @@ var pct = await server.storage.isFullyDownloaded('dat://beakerbrowser.com')
 Async. Delete all cached data for the dat.
 
 ```js
-await server.storage.delete('dat://beakerbrowser.com')
+await daemon.storage.delete('dat://beakerbrowser.com')
 ```
+
+#### storage.getDNSCache(hostname)
+
+Async. Get the disk-cached DNS lookup result for the given hostname.
+
+ - `hostname` String.
+
+#### storage.setDNSCache(hostname, value)
+
+Async. Set the disk-cached DNS lookup result for the given hostname.
+
+ - `hostname` String.
+ - `value` String.
+
+#### storage.clearDNSCache(hostname)
+
+Async. Remove the disk-cached DNS lookup result for the given hostname.
+
+ - `hostname` String.
 
 ### DatDNS
 
-The DNS manager. Can be found on the [`DatServer`](#datserver) API as `server.dns`.
+The DNS manager. Can be found on the [`DatDaemon`](#DatDaemon) API as `daemon.dns`.
 
 #### dns.resolve(url)
 
 Async. Get the key of the given URL.
 
 ```js
-var key = await server.dns.resolve('dat://beakerbrowser.com')
+var key = await daemon.dns.resolve('dat://beakerbrowser.com')
 ```
 
 ### DatArchive
@@ -321,9 +357,9 @@ var key = await server.dns.resolve('dat://beakerbrowser.com')
 A dat "archive" instance. See the [`DatArchive` API docs](https://beakerbrowser.com/docs/apis/dat.html).
 
 ```js
-const dat = require('@beaker/dat-server')
+const dat = require('@beaker/dat-daemon')
 
-const server = dat.createServer()
-var archive = server.getArchive('dat://beakerbrowser.com')
+const daemon = dat.createDaemon()
+var archive = daemon.getArchive('dat://beakerbrowser.com')
 await archive.readdir('/') => [...]
 ```
