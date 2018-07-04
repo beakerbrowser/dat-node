@@ -102,18 +102,6 @@ var daemon = createDaemon({
 
 ## DatDaemon
 
-### daemon.storage
-
-A [`DatDaemonStorage`](#datDaemonstorage) instance.
-
-### daemon.dns
-
-A [`DatDNS`](#datdns) instance.
-
-### daemon.networkId
-
-A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
-
 ### daemon.listen([port])
 
 Start listening for connections in the dat network. Only need to call if [`createDaemon`](#createdaemon) is called with `{autoListen: false}`, or if `daemon.close()` has been called.
@@ -123,46 +111,6 @@ Start listening for connections in the dat network. Only need to call if [`creat
 ### daemon.close()
 
 Unswarm all dats and stop listening.
-
-### daemon.joinSwarm(url)
-
-Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
-
- - **url**: String, the url of the dat. Can provide a DNS shortname.
-
-```js
-await daemon.joinSwarm('dat://beakerbrowser.com')
-```
-
-### daemon.leaveSwarm(url)
-
-Stop swarming the given dat.
-
-```js
-daemon.leaveSwarm('dat://beakerbrowser.com')
-```
-
-Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
-
-### daemon.isSwarming(url)
-
-Is the given dat in-memory and being actively swarmed?
-
- - **url**: String, the url of the dat. Can provide a DNS shortname.
-
-```js
-if (daemon.isSwarming('dat://beakerbrowser.com')) {
-  console.log('is being swarmed')
-}
-```
-
-### daemon.listSwarming()
-
-List the keys of in-memory and swarmed dats.
-
-```js
-var activeDats = daemon.listSwarming()
-```
 
 ### daemon.getArchive(url)
 
@@ -228,11 +176,64 @@ Async. Is all of the dat's data cached?
 var pct = await daemon.isFullySynced('dat://beakerbrowser.com')
 ```
 
+### daemon.joinSwarm(url)
+
+Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
+
+ - **url**: String, the url of the dat. Can provide a DNS shortname.
+
+```js
+await daemon.joinSwarm('dat://beakerbrowser.com')
+```
+
+### daemon.leaveSwarm(url)
+
+Stop swarming the given dat.
+
+```js
+daemon.leaveSwarm('dat://beakerbrowser.com')
+```
+
+Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
+
+### daemon.isSwarming(url)
+
+Is the given dat in-memory and being actively swarmed?
+
+ - **url**: String, the url of the dat. Can provide a DNS shortname.
+
+```js
+if (daemon.isSwarming('dat://beakerbrowser.com')) {
+  console.log('is being swarmed')
+}
+```
+
+### daemon.listSwarming()
+
+List the keys of in-memory and swarmed dats.
+
+```js
+var activeDats = daemon.listSwarming()
+```
+
+
 ### daemon.createDebugLogStream([opts])
 
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
 
 TODO decide what features this should include
+
+### daemon.storage
+
+A [`DatDaemonStorage`](#datDaemonstorage) instance.
+
+### daemon.dns
+
+A [`DatDNS`](#datdns) instance.
+
+### daemon.networkId
+
+A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
 
 ### Event: "network-changed"
 
