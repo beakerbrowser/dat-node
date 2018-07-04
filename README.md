@@ -2,12 +2,6 @@
 
 A toolkit for writing Dat-based services in nodejs.
 
-```
-npm install @beaker/dat-daemon
-```
-
-Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
-
 ```js
 const dat = require('@beaker/dat-daemon')
 
@@ -43,6 +37,8 @@ var isDownloaded     = await daemon.storage.isFullyDownloaded('dat://beakerbrows
 
 await daemon.dns.resolve('dat://beakerbrowser.com')
 ```
+
+Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
 
 ## Table of Contents
 
