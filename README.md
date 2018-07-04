@@ -53,12 +53,9 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
   - [daemon.getDiskUsage(url)](#daemongetdiskusageurl)
   - [daemon.getSyncProgress(url)](#daemongetsyncprogressurl)
   - [daemon.isFullySynced(url)](#daemonisfullysyncedurl)
-  - [daemon.joinSwarm(url)](#daemonjoinswarmurl)
-  - [daemon.leaveSwarm(url)](#daemonleaveswarmurl)
-  - [daemon.isSwarming(url)](#daemonisswarmingurl)
-  - [daemon.listSwarming()](#daemonlistswarming)
   - [daemon.createDebugLogStream([opts])](#daemoncreatedebuglogstreamopts)
   - [daemon.storage](#daemonstorage)
+  - [daemon.swarm](#daemonswarm)
   - [daemon.dns](#daemondns)
   - [daemon.networkId](#daemonnetworkid)
   - [Event: "network-changed"](#event-network-changed)
@@ -76,6 +73,9 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
   - [storage.getDNSCache(hostname)](#storagegetdnscachehostname)
   - [storage.setDNSCache(hostname, value)](#storagesetdnscachehostname-value)
   - [storage.clearDNSCache(hostname)](#storagecleardnscachehostname)
+- [DatDaemonSwarm](#datdaemonswarm)
+  - [swarm.join(url)](#swarmjoinurl)
+  - [swarm.leave(url)](#swarmleaveurl)
 - [DatDNS](#datdns)
   - [dns.resolve(url)](#dnsresolveurl)
 - [DatArchive](#datarchive)
@@ -176,47 +176,6 @@ Async. Is all of the dat's data cached?
 var pct = await daemon.isFullySynced('dat://beakerbrowser.com')
 ```
 
-### daemon.joinSwarm(url)
-
-Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
-
- - **url**: String, the url of the dat. Can provide a DNS shortname.
-
-```js
-await daemon.joinSwarm('dat://beakerbrowser.com')
-```
-
-### daemon.leaveSwarm(url)
-
-Stop swarming the given dat.
-
-```js
-daemon.leaveSwarm('dat://beakerbrowser.com')
-```
-
-Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
-
-### daemon.isSwarming(url)
-
-Is the given dat in-memory and being actively swarmed?
-
- - **url**: String, the url of the dat. Can provide a DNS shortname.
-
-```js
-if (daemon.isSwarming('dat://beakerbrowser.com')) {
-  console.log('is being swarmed')
-}
-```
-
-### daemon.listSwarming()
-
-List the keys of in-memory and swarmed dats.
-
-```js
-var activeDats = daemon.listSwarming()
-```
-
-
 ### daemon.createDebugLogStream([opts])
 
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
@@ -226,6 +185,10 @@ TODO decide what features this should include
 ### daemon.storage
 
 A [`DatDaemonStorage`](#datDaemonstorage) instance.
+
+### daemon.swarm
+
+A [`DatDaemonSwarm`](#datdaemonswarm) instance.
 
 ### daemon.dns
 
@@ -369,6 +332,28 @@ Async. Set the disk-cached DNS lookup result for the given hostname.
 Async. Remove the disk-cached DNS lookup result for the given hostname.
 
  - **hostname** String.
+
+## DatDaemonSwarm
+
+### swarm.join(url)
+
+Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
+
+ - **url**: String, the url of the dat. Can provide a DNS shortname.
+
+```js
+await daemon.swarm.join('dat://beakerbrowser.com')
+```
+
+### swarm.leave(url)
+
+Async. Stop swarming the given dat.
+
+```js
+await daemon.swarm.leave('dat://beakerbrowser.com')
+```
+
+Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
 
 ## DatDNS
 
