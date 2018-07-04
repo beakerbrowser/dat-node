@@ -10,12 +10,12 @@ const daemon = createDaemon({
   storage: './dat'
 })
 
-// get, create, or fork files archives
+// get, create, or fork archives
 var archive = await daemon.getArchive('dat://beakerbrowser.com')
 var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
 
-// interact with the files within the archive
+// you can read & write files within the archive
 var filenames = await archive.readdir('/')
 var filedata = await archive.readFile('/index.html', 'utf8')
 await archive.mkdir('/new')
