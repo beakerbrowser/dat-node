@@ -15,6 +15,13 @@ var archive = await daemon.getArchive('dat://beakerbrowser.com')
 var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
 
+// `archive` has a fs-like interface
+var filenames = await archive.readdir('/')
+var filedata = await archive.readFile('/index.html', 'utf8')
+await archive.mkdir('/new')
+await archive.writeFile('/new/thing.json', JSON.stringify({hi: 'world'}))
+archive.watch('/new/*.json').addEventListener('changed', ...) // file changed
+
 // network events
 daemon.on('network-changed', ...) // change to network conditions (aka new peer)
 daemon.on('download', ...) // data was downloaded
