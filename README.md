@@ -80,9 +80,13 @@ Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
  - `opts`
    - `data`: String, the path at which all data is stored.
    - `autoSwarm:` Boolean, swarm dats by default when loaded? Defaults to true.
+   - `autoListen`: Boolean, bind a port automatically after load. Defaults to true.
+   - `port`: Number, the port to bind to. Defaults to 3282.
 
 ```js
-var daemon = dat.createDaemon({
+const {createDaemon} = require('@beaker/dat-daemon')
+
+var daemon = createDaemon({
   data: './dat'
 })
 ```
