@@ -5,25 +5,26 @@ A toolkit for writing Dat-based services in nodejs.
 ```js
 const {createDaemon} = require('@beaker/dat-daemon')
 
+// instantiate a new dat daemon
 const daemon = createDaemon({
   storage: './dat'
 })
 
-// these methods return a DatArchive (https://beakerbrowser.com/docs/apis/dat.html)
+// these methods return a DatArchive
 var archive = await daemon.getArchive('dat://beakerbrowser.com')
 var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
 
 // network events
-daemon.on('network-changed', (dat, {connections}) => /*...*/)
-daemon.on('download', (dat, {feed, block, bytes}) => /*...*/)
-daemon.on('upload', (dat, {feed, block, bytes}) => /*...*/)
-daemon.on('sync', (dat, {feed}) => /*...*/)
+daemon.on('network-changed', ...) // change to network conditions (aka new peer)
+daemon.on('download', ...) // data was downloaded
+daemon.on('upload', ...) // data was uploaded
+daemon.on('sync', ...) // a feed was synced
 
 // helpers
-var mtime = await daemon.getMtime('dat://beakerbrowser.com')
-var diskUsage = await daemon.getDiskUsage('dat://beakerbrowser.com')
-var downloadProgress = await daemon.getSyncProgress('dat://beakerbrowser.com')
+await daemon.getMtime('dat://beakerbrowser.com') // unix timestamp of last change to the dat
+await daemon.getDiskUsage('dat://beakerbrowser.com') // in bytes
+await daemon.getSyncProgress('dat://beakerbrowser.com') // 0-1, where 1 is 100% synced
 ```
 
 Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
