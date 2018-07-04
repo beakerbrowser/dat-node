@@ -79,9 +79,7 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## API
-
-### createDaemon(opts)
+## createDaemon(opts)
 
 Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
 
@@ -99,31 +97,31 @@ var daemon = createDaemon({
 })
 ```
 
-### DatDaemon
+## DatDaemon
 
-#### daemon.storage
+### daemon.storage
 
 A [`DatDaemonStorage`](#datDaemonstorage) instance.
 
-#### daemon.dns
+### daemon.dns
 
 A [`DatDNS`](#datdns) instance.
 
-#### daemon.networkId
+### daemon.networkId
 
 A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
 
-#### daemon.listen([port])
+### daemon.listen([port])
 
 Start listening for connections in the dat network. Only need to call if [`createDaemon`](#createdaemon) is called with `{autoListen: false}`, or if `daemon.close()` has been called.
 
  - **port**. Number. The port to listen for connections on. Defaults to 3282.
 
-#### daemon.close()
+### daemon.close()
 
 Unswarm all dats and stop listening.
 
-#### daemon.joinSwarm(url)
+### daemon.joinSwarm(url)
 
 Async. Load a dat into memory, add it to the local storage (if not yet present) and begin swarming. Does not need to be called if `autoSwarm` is true.
 
@@ -133,7 +131,7 @@ Async. Load a dat into memory, add it to the local storage (if not yet present) 
 await daemon.joinSwarm('dat://beakerbrowser.com')
 ```
 
-#### daemon.leaveSwarm(url)
+### daemon.leaveSwarm(url)
 
 Stop swarming the given dat.
 
@@ -143,7 +141,7 @@ daemon.leaveSwarm('dat://beakerbrowser.com')
 
 Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
 
-#### daemon.isSwarming(url)
+### daemon.isSwarming(url)
 
 Is the given dat in-memory and being actively swarmed?
 
@@ -155,7 +153,7 @@ if (daemon.isSwarming('dat://beakerbrowser.com')) {
 }
 ```
 
-#### daemon.listSwarming()
+### daemon.listSwarming()
 
 List the keys of in-memory and swarmed dats.
 
@@ -163,7 +161,7 @@ List the keys of in-memory and swarmed dats.
 var activeDats = daemon.listSwarming()
 ```
 
-#### daemon.getArchive(url)
+### daemon.getArchive(url)
 
 Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with the given opts.
 
@@ -171,7 +169,7 @@ Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with t
 var archive = daemon.getArchive('dat://beakerbrowser.com')
 ```
 
-#### daemon.createArchive([opts])
+### daemon.createArchive([opts])
 
 Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html) with the given opts. Will automatically persist and swarm the archive.
 
@@ -183,7 +181,7 @@ Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html)
 var archive = await daemon.createArchive({title: 'My new archive'})
 ```
 
-#### daemon.forkArchive(url[, opts])
+### daemon.forkArchive(url[, opts])
 
  - **opts**
    - **title** String. The title of the new archive.
@@ -195,7 +193,7 @@ Async. Create a new [`DatArchive`](https://beakerbrowser.com/docs/apis/dat.html)
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My fork of the Beaker site'})
 ```
 
-#### daemon.getMtime(url)
+### daemon.getMtime(url)
 
 Async. Get the modification time of the dat's data. (Tells you the last time new data was written.)
 
@@ -203,7 +201,7 @@ Async. Get the modification time of the dat's data. (Tells you the last time new
 var mtime = await daemon.getMtime('dat://beakerbrowser.com')
 ```
 
-#### daemon.getDiskUsage(url)
+### daemon.getDiskUsage(url)
 
 Async. Get the amount of bytes being used by the dat in the local cache.
 
@@ -211,7 +209,7 @@ Async. Get the amount of bytes being used by the dat in the local cache.
 var bytes = await daemon.getDiskUsage('dat://beakerbrowser.com')
 ```
 
-#### daemon.getSyncProgress(url)
+### daemon.getSyncProgress(url)
 
 Async. Get the percentage of the total data downloaded (between 0 and 1).
 
@@ -219,7 +217,7 @@ Async. Get the percentage of the total data downloaded (between 0 and 1).
 var pct = await daemon.getSyncProgress('dat://beakerbrowser.com')
 ```
 
-#### daemon.isFullySynced(url)
+### daemon.isFullySynced(url)
 
 Async. Is all of the dat's data cached?
 
@@ -227,13 +225,13 @@ Async. Is all of the dat's data cached?
 var pct = await daemon.isFullySynced('dat://beakerbrowser.com')
 ```
 
-#### daemon.createDebugLogStream([opts])
+### daemon.createDebugLogStream([opts])
 
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
 
 TODO decide what features this should include
 
-#### Event: "network-changed"
+### Event: "network-changed"
 
 A change in the network-connectivity of a given dat.
 
@@ -246,7 +244,7 @@ daemon.on('network-changed', (url, {connections}) => {
 })
 ```
 
-#### Event: "download"
+### Event: "download"
 
 Some data has been downloaded.
 
@@ -261,7 +259,7 @@ daemon.on('download', (url, {feed, block, bytes}) => {
 })
 ```
 
-#### Event: "upload" (url, {feed, block, bytes})
+### Event: "upload" (url, {feed, block, bytes})
 
 Some data has been uploaded.
 
@@ -276,7 +274,7 @@ daemon.on('upload', (url, {feed, block, bytes}) => {
 })
 ```
 
-#### Event: "sync" (url, {feed})
+### Event: "sync" (url, {feed})
 
 A feed has been fully downloaded.
 
@@ -289,11 +287,11 @@ daemon.on('sync', (url, {feed}) => {
 })
 ```
 
-### DatDaemonStorage
+## DatDaemonStorage
 
 The local data store. Includes all data which is persisted onto disk. Can be found on the [`DatDaemon`](#DatDaemon) API as `daemon.storage`.
 
-#### storage.list()
+### storage.list()
 
 Async. List the metadata of locally-stored dats.
 
@@ -301,7 +299,7 @@ Async. List the metadata of locally-stored dats.
 var datInfos = await daemon.storage.list()
 ```
 
-#### storage.get(url)
+### storage.get(url)
 
 Async. Fetch the stored metadata about the archive. Returns `null` if not present locally.
 
@@ -309,7 +307,7 @@ Async. Fetch the stored metadata about the archive. Returns `null` if not presen
 var datInfo = await daemon.storage.get('dat://beakerbrowser.com')
 ```
 
-#### storage.delete(url)
+### storage.delete(url)
 
 Async. Delete all cached data for the dat.
 
@@ -317,7 +315,7 @@ Async. Delete all cached data for the dat.
 await daemon.storage.delete('dat://beakerbrowser.com')
 ```
 
-#### storage.getMtime(url)
+### storage.getMtime(url)
 
 Async. Get the modification time of the dat's data. (Tells you the last time new data was written.)
 
@@ -325,7 +323,7 @@ Async. Get the modification time of the dat's data. (Tells you the last time new
 var mtime = await daemon.storage.getMtime('dat://beakerbrowser.com')
 ```
 
-#### storage.getDiskUsage(url)
+### storage.getDiskUsage(url)
 
 Async. Get the amount of bytes being used by the dat in the local cache.
 
@@ -333,7 +331,7 @@ Async. Get the amount of bytes being used by the dat in the local cache.
 var bytes = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
 ```
 
-#### storage.getSyncProgress(url)
+### storage.getSyncProgress(url)
 
 Async. Get the percentage of the total data downloaded (between 0 and 1).
 
@@ -341,7 +339,7 @@ Async. Get the percentage of the total data downloaded (between 0 and 1).
 var pct = await daemon.storage.getSyncProgress('dat://beakerbrowser.com')
 ```
 
-#### storage.isFullySynced(url)
+### storage.isFullySynced(url)
 
 Async. Is all of the dat's data cached?
 
@@ -349,30 +347,30 @@ Async. Is all of the dat's data cached?
 var pct = await daemon.storage.isFullySynced('dat://beakerbrowser.com')
 ```
 
-#### storage.getDNSCache(hostname)
+### storage.getDNSCache(hostname)
 
 Async. Get the disk-cached DNS lookup result for the given hostname.
 
  - **hostname** String.
 
-#### storage.setDNSCache(hostname, value)
+### storage.setDNSCache(hostname, value)
 
 Async. Set the disk-cached DNS lookup result for the given hostname.
 
  - **hostname** String.
  - **value** String.
 
-#### storage.clearDNSCache(hostname)
+### storage.clearDNSCache(hostname)
 
 Async. Remove the disk-cached DNS lookup result for the given hostname.
 
  - **hostname** String.
 
-### DatDNS
+## DatDNS
 
 The DNS manager. Can be found on the [`DatDaemon`](#DatDaemon) API as `daemon.dns`.
 
-#### dns.resolve(url)
+### dns.resolve(url)
 
 Async. Get the key of the given URL.
 
@@ -380,7 +378,7 @@ Async. Get the key of the given URL.
 var key = await daemon.dns.resolve('dat://beakerbrowser.com')
 ```
 
-### DatArchive
+## DatArchive
 
 A dat "archive" instance. See the [`DatArchive` API docs](https://beakerbrowser.com/docs/apis/dat.html).
 
