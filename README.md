@@ -17,10 +17,13 @@ var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fo
 
 // you can read & write files within the archive
 var filenames = await archive.readdir('/')
-var filedata = await archive.readFile('/index.html', 'utf8')
+var filedata  = await archive.readFile('/index.html', 'utf8')
+
 await archive.mkdir('/new')
 await archive.writeFile('/new/thing.json', JSON.stringify({hi: 'world'}))
-archive.watch('/new/*.json').addEventListener('changed', ...) // file changed
+
+var events = archive.watch('/new/*.json')
+events.addEventListener('changed', ...)
 
 // listen to global network events
 daemon.on('network-changed', ...) // change to network conditions (aka new peer)
@@ -68,14 +71,13 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
   - [storage.delete(url)](#storagedeleteurl)
   - [storage.getMtime(url)](#storagegetmtimeurl)
   - [storage.getDiskUsage(url)](#storagegetdiskusageurl)
-  - [storage.getSyncProgress(url)](#storagegetsyncprogressurl)
-  - [storage.isFullySynced(url)](#storageisfullysyncedurl)
   - [storage.getDNSCache(hostname)](#storagegetdnscachehostname)
   - [storage.setDNSCache(hostname, value)](#storagesetdnscachehostname-value)
   - [storage.clearDNSCache(hostname)](#storagecleardnscachehostname)
 - [DatDaemonSwarm](#datdaemonswarm)
   - [swarm.join(url)](#swarmjoinurl)
   - [swarm.leave(url)](#swarmleaveurl)
+  - [swarm.port](#swarmport)
 - [DatDNS](#datdns)
   - [dns.resolve(url)](#dnsresolveurl)
 - [DatArchive](#datarchive)
@@ -104,13 +106,13 @@ var daemon = createDaemon({
 
 ### daemon.listen([port])
 
-Start listening for connections in the dat network. Only need to call if [`createDaemon`](#createdaemon) is called with `{autoListen: false}`, or if `daemon.close()` has been called.
+Async. Start listening for connections in the dat network. Only need to call if [`createDaemon`](#createdaemon) is called with `{autoListen: false}`, or if `daemon.close()` has been called.
 
  - **port**. Number. The port to listen for connections on. Defaults to 3282.
 
 ### daemon.close()
 
-Unswarm all dats and stop listening.
+Async. Unswarm all dats and stop listening.
 
 ### daemon.getArchive(url)
 
@@ -298,22 +300,6 @@ Async. Get the amount of bytes being used by the dat in the local cache.
 var bytes = await daemon.storage.getDiskUsage('dat://beakerbrowser.com')
 ```
 
-### storage.getSyncProgress(url)
-
-Async. Get the percentage of the total data downloaded (between 0 and 1).
-
-```js
-var pct = await daemon.storage.getSyncProgress('dat://beakerbrowser.com')
-```
-
-### storage.isFullySynced(url)
-
-Async. Is all of the dat's data cached?
-
-```js
-var pct = await daemon.storage.isFullySynced('dat://beakerbrowser.com')
-```
-
 ### storage.getDNSCache(hostname)
 
 Async. Get the disk-cached DNS lookup result for the given hostname.
@@ -354,6 +340,10 @@ await daemon.swarm.leave('dat://beakerbrowser.com')
 ```
 
 Will not remove the dat's data from the local storage (see `daemon.storage.remove()`).
+
+### swarm.port
+
+Number. The port being listened to.
 
 ## DatDNS
 
