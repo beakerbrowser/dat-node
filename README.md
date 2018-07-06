@@ -16,14 +16,8 @@ var archive = await daemon.createArchive({title: 'My Archive'})
 var archive = await daemon.forkArchive('dat://beakerbrowser.com', {title: 'My Fork of the Beaker site'})
 
 // you can read & write files within the archive
-var filenames = await archive.readdir('/')
 var filedata  = await archive.readFile('/index.html', 'utf8')
-
-await archive.mkdir('/new')
 await archive.writeFile('/new/thing.json', JSON.stringify({hi: 'world'}))
-
-var events = archive.watch('/new/*.json')
-events.addEventListener('changed', ...)
 
 // listen to global network events
 daemon.on('network-changed', ...) // change to network conditions (aka new peer)
@@ -39,7 +33,15 @@ await daemon.getSyncProgress('dat://beakerbrowser.com') // 0-1, where 1 is 100% 
 
 Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
 
-## Table of Contents
+## Examples
+
+### 👉 [simplest-possible-example.js](./examples/simplest-possible-example.js)
+
+### 👉 [create-archive.js](./examples/create-archive.js)
+
+### 👉 [download-archive.js](./examples/download-archive.js)
+
+## API
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
