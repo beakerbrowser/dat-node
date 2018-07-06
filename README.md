@@ -60,7 +60,8 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
   - [daemon.storage](#daemonstorage)
   - [daemon.swarm](#daemonswarm)
   - [daemon.dns](#daemondns)
-  - [daemon.networkId](#daemonnetworkid)
+  - [Event: "listening"](#event-listening)
+  - [Event: "error"](#event-error)
   - [Event: "network-changed"](#event-network-changed)
   - [Event: "download"](#event-download)
   - [Event: "upload" (url, {feed, block, bytes})](#event-upload-url-feed-block-bytes)
@@ -78,6 +79,20 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
   - [swarm.join(url)](#swarmjoinurl)
   - [swarm.leave(url)](#swarmleaveurl)
   - [swarm.port](#swarmport)
+  - [swarm.networkId](#swarmnetworkid)
+  - [Event: "listening"](#event-listening-1)
+  - [Event: "error"](#event-error-1)
+  - [Event: "peer"](#event-peer)
+  - [Event: "peer-banned"](#event-peer-banned)
+  - [Event: "peer-rejected"](#event-peer-rejected)
+  - [Event: "drop"](#event-drop)
+  - [Event: "connecting"](#event-connecting)
+  - [Event: "connect-failed"](#event-connect-failed)
+  - [Event: "handshaking"](#event-handshaking)
+  - [Event: "handshake-timeout"](#event-handshake-timeout)
+  - [Event: "connection"](#event-connection)
+  - [Event: "connection-closed"](#event-connection-closed)
+  - [Event: "redundant-connection"](#event-redundant-connection)
 - [DatDNS](#datdns)
   - [dns.resolve(url)](#dnsresolveurl)
 - [DatArchive](#datarchive)
@@ -89,7 +104,7 @@ Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses
 Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
 
  - **opts**
-   - **data**: String, the path at which all data is stored.
+   - **storage**: String, the path at which all data is stored.
    - **autoSwarm**` Boolean, swarm dats by default when loaded? Defaults to true.
    - **autoListen**: Boolean, bind a port automatically after load. Defaults to true.
    - **port**: Number, the port to bind to. Defaults to 3282.
@@ -98,7 +113,7 @@ Create a new dat daemon. See the [`DatDaemon`](#DatDaemon) API.
 const {createDaemon} = require('@beaker/dat-daemon')
 
 var daemon = createDaemon({
-  data: './dat'
+  storage: './dat'
 })
 ```
 
@@ -196,9 +211,17 @@ A [`DatDaemonSwarm`](#datdaemonswarm) instance.
 
 A [`DatDNS`](#datdns) instance.
 
-### daemon.networkId
+### Event: "listening"
 
-A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
+The swarm port is now bound and listening.
+
+ - **port**. Number.
+
+### Event: "error"
+
+A critical error has occurred.
+
+ - **err**. Error.
 
 ### Event: "network-changed"
 
@@ -344,6 +367,138 @@ Will not remove the dat's data from the local storage (see `daemon.storage.remov
 ### swarm.port
 
 Number. The port being listened to.
+
+### swarm.networkId
+
+A 32-byte buffer containing a randomly-generated ID, used to deduplicate connections.
+
+### Event: "listening"
+
+The swarm port is now bound and listening.
+
+ - **port**. Number.
+
+### Event: "error"
+
+A critical error has occurred.
+
+ - **err**. Error.
+
+### Event: "peer"
+
+Emitted when a peer has been discovered.
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+
+### Event: "peer-banned"
+
+Emitted when a peer has been banned as a connection candidate.
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+ - **details**. Object.
+   - **reason**. String. Why was the peer banned? May be 'application' (removePeer() was called) or 'detected-self'.
+
+### Event: "peer-rejected"
+
+Emitted when a peer has been rejected as a connection candidate.
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+ - **details**. Object.
+   - **reason**. String. Why was the peer rejected? May be 'duplicate', 'banned', or 'whitelist'.
+
+### Event: "drop"
+
+Emitted when a peer has been dropped from tracking, typically because it failed too many times to connect. 
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+
+### Event: "connecting"
+
+Emitted when a connection is being attempted.
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+
+### Event: "connect-failed"
+
+Emitted when a connection attempt fails.
+
+ - **peer**. Peer.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **id** String. The ID of the peer on the discovery network.
+   - **channel** Buffer. The key used to arrange this connection in the discovery network.
+ - **details**. Object.
+   - **timedout**. Boolean. Did the connection fail due to a timeout?
+
+### Event: "handshaking"
+
+Emitted when you've connected to a peer and are now initializing the connection's session.
+
+ - **connection**. Connection.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **key** String. The key of the dat which the peer is exchanging.
+   - **discoveryKey** String. The discovery key of the dat which the peer is exchanging.
+
+### Event: "handshake-timeout"
+
+Emitted when the handshake fails to complete in a timely fashion.
+
+ - **connection**. Connection.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **key** String. The key of the dat which the peer is exchanging.
+   - **discoveryKey** String. The discovery key of the dat which the peer is exchanging.
+
+### Event: "connection"
+
+Emitted when you have fully connected to another peer.
+
+ - **connection**. Connection.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **key** String. The key of the dat which the peer is exchanging.
+   - **discoveryKey** String. The discovery key of the dat which the peer is exchanging.
+
+### Event: "connection-closed"
+
+Emitted when you've disconnected from a peer. 
+
+ - **connection**. Connection.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **key** String. The key of the dat which the peer is exchanging.
+   - **discoveryKey** String. The discovery key of the dat which the peer is exchanging.
+
+### Event: "redundant-connection"
+
+Emitted when multiple connections are detected with a peer, and so one is going to be dropped (the connection given).
+
+ - **connection**. Connection.
+   - **remoteAddress** String.
+   - **remotePort** Number.
+   - **key** String. The key of the dat which the peer is exchanging.
+   - **discoveryKey** String. The discovery key of the dat which the peer is exchanging.
 
 ## DatDNS
 
