@@ -1,4 +1,4 @@
-const {createDaemon} = require('../index')
+const {createNode} = require('../index')
 const tempy = require('tempy')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
@@ -18,25 +18,25 @@ function usage () {
 }
 
 async function main () {
-  // instantiate a new dat daemon
+  // instantiate a new dat node
   var storage = tempy.directory()
-  console.log('> Starting daemon, data dir:', storage)
-  const daemon = createDaemon({storage, port: 0})
+  console.log('> Starting dat, data dir:', storage)
+  const dat = createNode({storage})
 
   // bind to events
-  daemon.on('listening', (port) => console.log(' (i) Daemon listening on', port))
-  daemon.swarm.on('join', ({key, discoveryKey}) => console.log(' (i) Joined swarm'))
-  daemon.swarm.on('leave', ({key, discoveryKey}) => console.log(' (i) Left swarm'))
-  daemon.swarm.on('connection', ({remoteAddress, remotePort, key}) => console.log(' (i) New connection', `${remoteAddress}:${remotePort}`, 'for', key))
-  daemon.swarm.on('connection-closed', ({remoteAddress, remotePort, key}) => console.log(' (i) Connection closed', `${remoteAddress}:${remotePort}`, 'for', key))
-  daemon.on('error', err => {
+  dat.on('listening', (port) => console.log(' (i) Swarm listening on', port))
+  dat.swarm.on('join', ({key, discoveryKey}) => console.log(' (i) Joined swarm'))
+  dat.swarm.on('leave', ({key, discoveryKey}) => console.log(' (i) Left swarm'))
+  dat.swarm.on('connection', ({remoteAddress, remotePort, key}) => console.log(' (i) New connection', `${remoteAddress}:${remotePort}`, 'for', key))
+  dat.swarm.on('connection-closed', ({remoteAddress, remotePort, key}) => console.log(' (i) Connection closed', `${remoteAddress}:${remotePort}`, 'for', key))
+  dat.on('error', err => {
     console.error(err)
     process.exit(1)
   })
 
   // fetch archive
   console.log('> Fetching archive:', datUrl)
-  var archive = await daemon.getArchive(datUrl)
+  var archive = await dat.getArchive(datUrl)
   console.log('> Downloading...')
   await archive.download('/')
 
@@ -47,7 +47,7 @@ async function main () {
 
   // close up
   console.log('> Done!')
-  daemon.close()
+  dat.close()
 }
 main()
 

@@ -1,3 +1,3 @@
-const {createDaemon} = require('./lib/dat-daemon')
+const {createNode} = require('./lib/dat-node')
 
-module.exports = {createDaemon}
+module.exports = {createNode}

@@ -1,5 +1,5 @@
 {
-  "name": "@beaker/dat-daemon",
+  "name": "@beaker/dat-node",
   "version": "1.0.0",
   "description": "A toolkit for writing Dat-based services in nodejs",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/beakerbrowser/dat-daemon.git"
+    "url": "git+https://github.com/beakerbrowser/dat-node.git"
   },
   "keywords": [
     "dat",
@@ -17,9 +17,9 @@
   "author": "Paul Frazee <pfrazee@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/beakerbrowser/dat-daemon/issues"
+    "url": "https://github.com/beakerbrowser/dat-node/issues"
   },
-  "homepage": "https://github.com/beakerbrowser/dat-daemon#readme",
+  "homepage": "https://github.com/beakerbrowser/dat-node#readme",
   "dependencies": {
     "beaker-error-constants": "^1.4.0",
     "concat-stream": "^1.6.2",
