@@ -128,7 +128,7 @@ node examples/download-archive.js dat://beakerbrowser.com
 Create a new dat dat. See the [`DatNode`](#DatNode) API.
 
  - **opts**
-   - **storage**: String, the path at which all data is stored.
+   - **path**: String, the path at which all data is stored.
    - **autoSwarm**` Boolean, swarm dats by default when loaded? Defaults to true.
    - **autoListen**: Boolean, bind a port automatically after load. Defaults to true.
    - **port**: Number, the port to bind to. Defaults to 3282.
@@ -137,7 +137,7 @@ Create a new dat dat. See the [`DatNode`](#DatNode) API.
 const {createNode} = require('@beaker/dat-node')
 
 var dat = createNode({
-  storage: './dat'
+  path: './data'
 })
 ```
 
