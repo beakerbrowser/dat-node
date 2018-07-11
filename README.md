@@ -33,6 +33,16 @@ await dat.getSyncProgress('dat://beakerbrowser.com') // 0-1, where 1 is 100% syn
 
 Provides the same Dat APIs that [Beaker browser](https://beakerbrowser.com) uses, so that code written which depends on the [DatArchive](https://beakerbrowser.com/docs/apis/dat.html) will work here and in the browser.
 
+## TODOs
+
+This repo is a work in progress. It still needs:
+
+ - [ ] Tests
+ - [ ] DNS shortnames
+ - [ ] getSyncProgress() implementation
+ - [ ] DatNode events
+ - [ ] Probably more
+
 ## Examples
 
 ### 👉 [simplest-possible-example.js](./examples/simplest-possible-example.js)
