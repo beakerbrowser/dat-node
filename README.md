@@ -7,7 +7,7 @@ const {createNode} = require('@beaker/dat-node')
 
 // instantiate a new dat node
 const dat = createNode({
-  storage: './dat'
+  path: './dat'
 })
 
 // get, create, or fork archives
