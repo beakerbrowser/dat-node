@@ -26,8 +26,8 @@ test.before(async t => {
   datPeers2 = await app2.getPeers(createdDatUrl)
 })
 test.after.always('cleanup', async t => {
-  datPeers1._detach()
-  datPeers2._detach()
+  // datPeers1._detach()
+  // datPeers2._detach()
 })
 
 // tests
