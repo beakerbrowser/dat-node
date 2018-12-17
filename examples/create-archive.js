@@ -8,7 +8,7 @@ async function main () {
   // instantiate a new dat node
   var storage = tempy.directory()
   console.log('> Starting dat, data dir:', storage)
-  const dat = createNode({storage})
+  const dat = createNode({path: storage})
 
   // bind to events
   dat.on('listening', (port) => console.log(' (i) Swarm listening on', port))
