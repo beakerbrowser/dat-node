@@ -81,6 +81,7 @@ node examples/download-archive.js dat://beakerbrowser.com
   - [dat.getSyncProgress(url)](#datgetsyncprogressurl)
   - [dat.isFullySynced(url)](#datisfullysyncedurl)
   - [dat.createDebugLogStream([opts])](#datcreatedebuglogstreamopts)
+  - [dat.getPeers(url)](#datgetPeersurl)
   - [dat.storage](#datstorage)
   - [dat.swarm](#datswarm)
   - [dat.dns](#datdns)
@@ -222,6 +223,19 @@ var pct = await dat.isFullySynced('dat://beakerbrowser.com')
 Get a readable string-stream containing the content of the debug log. Useful for providing debugging interfaces.
 
 TODO decide what features this should include
+
+### dat.getPeers(url)
+
+Get the [datPeers](https://beakerbrowser.com/docs/apis/experimental-datpeers) API for a given url.
+
+```js
+var datPeers = dat.getPeers('dat://beakerbrowser.com')
+
+const peers = await datPeers.list()
+
+// When you're done with the peers
+datPeers._detach()
+```
 
 ### dat.storage
 
